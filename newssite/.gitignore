@@ -1,0 +1,4 @@
+newssite.egg-info
+newssite.db
+*.swp
+__pycache__

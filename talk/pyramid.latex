@@ -1,0 +1,87 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Singapore}
+  % \setbeamercovered{transparent}
+}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{polski}
+
+% \usepackage{times}
+
+% For pygmentize
+\usepackage{fancyvrb}
+\usepackage{color}
+
+
+\title{Pyramid -- podstawowe koncepcje w praktyce}
+
+\author[]{Szymon Pyżalski}
+
+\institute{STX Next python experts}
+
+\date {PyConPL 2012}
+
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage 
+  \url{http://??}
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents
+  %\pausesections
+\end{frame}
+
+
+\section{Zasoby i przechodzenie}
+
+\begin{frame}{Zasoby i widoki}
+
+  \begin{itemize}
+  \pause
+  \item
+    Zamiast architektury MVC - architektura RVT
+    \pause
+  \item
+    Nie jest określone czym są zasoby
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Algorytm przechodzenia}
+  \begin{itemize}
+  \pause
+  \item
+      Aby zasób mógł być krokiem w przechodzeniu wystarczy
+      \Verb|\_\_getitem\_\_|
+    \pause
+  \item
+      Aby mógł się odnaleźć w drzewie powinien mieć \Verb|\_\_parent\_\_| i
+      \Verb|\_\_name\_\_|
+    \pause
+  \item
+      ZODB ma to wszystk od razu \pause (ale my nie użyjemy ZODB :>)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Widoki}
+  \begin{itemize}
+  \pause
+  \item
+      Po znalezieniu zasobu, Pyramid szuka dla niego widoku
+    \pause
+  \item
+      Framework stara się znaleźć najlepszy widok według predykatów
+  \end{itemize}
+\end{frame}
+
+
+\end{document}
+
+
