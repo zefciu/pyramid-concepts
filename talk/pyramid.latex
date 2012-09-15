@@ -125,6 +125,21 @@
   \end{itemize}
 \end{frame}
 
+\begin{frame}{Polityka autoryzacji}
+
+  \begin{itemize}
+  \pause
+  \item
+      Wbudowana jest dosyć mocna polityka oparta o ACL
+    \pause
+  \item
+      ACL trzyczłonowe: zezwól/zabroń - użytkownik - uprawnienie
+    \pause
+  \item
+      Uprawnienia przypisujemy do widoków
+  \end{itemize}
+\end{frame}
+
 \end{document}
 
 
