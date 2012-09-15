@@ -81,6 +81,22 @@
   \end{itemize}
 \end{frame}
 
+\section{Uwierzytelnianie i autoryzacja}
+
+\begin{frame}{Polityka uwierzytelniania}
+
+  \begin{itemize}
+  \pause
+  \item
+    Należy skonfigurować dwie polityki
+    \pause
+  \item
+    Polityka uwierzytelniania zwraca listę nazw
+    \pause
+  \item
+    Używamy funkcji \Verb|callback| aby przekształcić nazwę użytkownika w listę
+  \end{itemize}
+\end{frame}
 
 \end{document}
 

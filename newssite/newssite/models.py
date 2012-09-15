@@ -23,10 +23,14 @@ from sqlalchemy import (
     String,
     DateTime,
     Boolean,
+    ForeignKey,
     )
+
+from sqlalchemy.orm import relationship
 
 from zope.sqlalchemy import ZopeTransactionExtension
 from pyramid.traversal import resource_path
+from pyramid.security import Allow, Deny, Everyone
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -63,6 +67,26 @@ class Root(TraversalStep):
         raise KeyError()
 
 
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    login = Column(String(64), unique=True)
+    passwd = Column(String(64))
+    groups = Column(String(128))
+
+    def __init__(self, login, passwd, groups):
+        self.login = login
+        self.groups = groups
+        self.passwd = passwd
+
+    def check_passwd(self, passwd):
+        return passwd == self.passwd
+
+    @property
+    def __name__(self):
+        return self.login
+
 class News(Base):
     __tablename__ = 'news'
     id = Column(Integer, primary_key=True)
@@ -71,6 +95,8 @@ class News(Base):
     content = Column(Text)
     published = Column(DateTime)
     accepted = Column(Boolean)
+    author_id = Column(Integer, ForeignKey('users.id'))
+    author = relationship(User, backref='news')
     
 
     def __init__(self, title, content, published):
@@ -89,8 +115,22 @@ class News(Base):
 
 
 class NewsCollection(TraversalStep):
+    __acl__ = [
+        (Allow, Everyone, 'add')
+    ]
     model = News
     lookup_key = 'slug'
+
+    def get_index(self):
+        news = DBSession.query(News).order_by(News.published).all()
+        for news_item in news:
+            news_item.__parent__ = self
+        return news
+
+
+class UsersCollection(TraversalStep):
+    model = User
+    lookup_key = 'login'
 
     def get_index(self):
         news = DBSession.query(News).order_by(News.published).all()
