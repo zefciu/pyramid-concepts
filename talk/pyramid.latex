@@ -39,6 +39,33 @@
   %\pausesections
 \end{frame}
 
+\section{Założenia}
+\begin{frame}{Wymagania biznesowe}
+  \begin{itemize}
+  \pause
+  \item
+      System zarządzania newsami
+    \pause
+  \item
+      Wielu użytkowników ma prawo dodawać newsy
+  \item
+      Tylko moderatorzy mogą akceptować i publikować newsy
+  \end{itemize}
+\end{frame}
+
+\section{Założenia}
+\begin{frame}{Nasze założenia}
+  \begin{itemize}
+  \pause
+  \item
+      Staramy się używać architektury zorientowanej na zasoby
+    \pause
+  \item
+      Upraszczamy rzeczy, które nie są istotne z punktu widzenia frameworka
+  \item
+      Niekoniecznie robimy wszystko tak, jakbyśmy zrobili na produkcję
+  \end{itemize}
+\end{frame}
 
 \section{Zasoby i przechodzenie}
 
