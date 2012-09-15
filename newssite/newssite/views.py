@@ -5,7 +5,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.traversal import resource_path
-from pyramid.security import remember
+from pyramid.security import remember, has_permission
 
 from sqlalchemy.exc import DBAPIError
 
@@ -26,7 +26,7 @@ class RegisterSchema(colander.MappingSchema):
 
 @view_config(
     context=UsersCollection, renderer='newssite:templates/render_form.mako',
-    name='register'
+    name='register', permission='register'
 )
 def register_user(context, request):
     form = deform.Form(RegisterSchema(), buttons=('submit',))
@@ -60,13 +60,17 @@ def _validate_password(form, value):
 
 @view_config(
     context=User, renderer='newssite:templates/single_user.mako',
+    permission='register'
 )
 def view_user(context, request):
     return {'user': context}
 
 
-@view_config(context=UsersCollection, name='login',
-        renderer='newssite:templates/render_form.mako')
+@view_config(
+    context=UsersCollection, name='login',
+    renderer='newssite:templates/render_form.mako',
+
+)
 def login(context, request):
     form = deform.Form(
         LoginSchema(validator=_validate_password), buttons=('submit',)
@@ -111,11 +115,28 @@ def add_news(context, request):
     return {'form': form}
 
 @view_config(
-    context=NewsCollection, renderer='newssite:templates/news_index.mako'
+    context=NewsCollection, renderer='newssite:templates/news_index.mako',
+    permission='view'
 )
 def display_news_index(context, request):
-    return {'news': context.get_index()}
+    return {
+        'news': context.get_index(),
+    }
 
-@view_config(context=News, renderer='newssite:templates/single_news.mako')
+@view_config(
+    context=News, renderer='newssite:templates/single_news.mako',
+    permission='view'
+)
 def display_single_news(context, request):
-    return {'news':context}
+    return {
+        'news':context,
+        'can_accept': (
+            has_permission('accept', context, request)
+            and not context.accepted
+        ), 'accept_path': resource_path(context) + '/accept'
+    }
+
+@view_config(context=News, name='accept', permission='add')
+def accept(context, request):
+    context.accepted = True
+    return HTTPFound(location=resource_path(context))

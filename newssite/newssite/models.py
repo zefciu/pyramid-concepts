@@ -1,5 +1,6 @@
 import re
 import unicodedata
+import datetime
 
 from sqlalchemy import (
     Column,
@@ -70,6 +71,10 @@ class Root(TraversalStep):
 
 class User(Base):
     __tablename__ = 'users'
+    __acl__ = [
+        (Allow, 'group:su', 'register'),
+        (Deny, Everyone, 'register'),
+    ]
     id = Column(Integer, primary_key=True)
     login = Column(String(64), unique=True)
     passwd = Column(String(64))
@@ -89,6 +94,21 @@ class User(Base):
 
 class News(Base):
     __tablename__ = 'news'
+    @property
+    def __acl__(self):
+        yield (Allow, 'group:su', 'add')
+        yield (Allow, 'group:editors', 'add')
+        yield (Deny, Everyone, 'add')
+        yield (Allow, 'user:' + self.author.login, 'view')
+        yield (Allow, 'group:su', 'view')
+        yield (Allow, 'group:editors', 'view')
+        if self.accepted and self.published < datetime.datetime.now():
+            yield (Allow, Everyone, 'view')
+        else:
+            yield (Deny, Everyone, 'view')
+        yield (Allow, 'group:su', 'accept')
+        yield (Allow, 'group:editors', 'accept')
+        yield (Deny, Everyone, 'accept')
     id = Column(Integer, primary_key=True)
     title = Column(String(64), unique=True)
     slug = Column(String(64), unique=True)
@@ -116,7 +136,10 @@ class News(Base):
 
 class NewsCollection(TraversalStep):
     __acl__ = [
-        (Allow, Everyone, 'add')
+        (Allow, 'group:su', 'add'),
+        (Allow, 'group:editors', 'add'),
+        (Deny, Everyone, 'add'),
+        (Allow, Everyone, 'view'),
     ]
     model = News
     lookup_key = 'slug'
@@ -131,6 +154,10 @@ class NewsCollection(TraversalStep):
 class UsersCollection(TraversalStep):
     model = User
     lookup_key = 'login'
+    __acl__ = [
+        (Allow, 'group:su', 'register'),
+        (Deny, Everyone, 'register'),
+    ]
 
     def get_index(self):
         news = DBSession.query(News).order_by(News.published).all()
